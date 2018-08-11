@@ -57,4 +57,5 @@ DT_PILOT_CONFIG = {
                'angle_sma_n': 10,
                'throttle_max': 1.0,
                'throttle_min': 0.5,
+               'obstacle_model': '',
                 }
