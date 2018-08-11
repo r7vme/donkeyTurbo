@@ -33,7 +33,7 @@ def drive(cfg, model_path=None, use_joystick=False):
     from donkeycar.parts.actuator import PCA9685, PWMSteering, PWMThrottle
     from donkeycar.parts.datastore import TubHandler
     from donkeycar.parts.controller import LocalWebController, JoystickController
-    from donkeyturbo.keras import DTKerasPilot
+    from donkeyturbo.pilot import DTKerasPilot
 
     # Initialize a car.
     V = dk.vehicle.Vehicle()
@@ -128,13 +128,13 @@ def train(cfg, tub_names, model_name):
     '''
     # Do imports.
     from donkeycar.parts.datastore import TubGroup
-    from donkeyturbo.keras import DTKerasPilot
+    from donkeyturbo.pilot import DTKerasPilot
 
     X_keys = ['cam/image_array']
     y_keys = ['user/angle', 'user/throttle']
 
     def rt(record):
-        record['user/angle'] = dk.utils.linear_bin(record['user/angle'])
+        record['user/angle'] = dk.util.data.linear_bin(record['user/angle'])
         return record
 
     kl = DTKerasPilot()
@@ -142,9 +142,12 @@ def train(cfg, tub_names, model_name):
     if not tub_names:
         tub_names = os.path.join(cfg.DATA_PATH, '*')
     tubgroup = TubGroup(tub_names)
-    train_gen, val_gen = tubgroup.get_train_val_gen(X_keys, y_keys, record_transform=rt,
+    train_gen, val_gen = tubgroup.get_train_val_gen(X_keys, y_keys,
                                                     batch_size=cfg.BATCH_SIZE,
-                                                    train_frac=cfg.TRAIN_TEST_SPLIT)
+                                                    train_frac=cfg.TRAIN_TEST_SPLIT,
+                                                    train_record_transform=rt,
+                                                    val_record_transform=rt,
+                                                    )
 
     model_path = os.path.expanduser(model_name)
 

@@ -14,4 +14,5 @@ setup(name='donkeyturbo',
           'docopt',
           'pillow',
           'numpy',
+          'tensorflow==1.7.1'
           ])

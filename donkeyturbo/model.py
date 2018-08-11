@@ -5,8 +5,8 @@ Module contains pilot class and Keras model.
 
 # NOTE(r7vme): Just a copy of default_categorical with zoomed input layer.
 def dt_categorical():
-    from keras.models import Model
-    from keras.layers import Input, Convolution2D, Dropout, Flatten, Dense
+    from tensorflow.python.keras.models import Model
+    from tensorflow.python.keras.layers import Input, Convolution2D, Dropout, Flatten, Dense
 
     # Use here 78 pixels height instead default 120.
     img_in = Input(shape=(78, 160, 3), name='img_in')                      # First layer, input layer, Shape comes from camera.py resolution, RGB
@@ -39,8 +39,8 @@ def dt_categorical():
     return model
 
 def dt_obstacle():
-    from keras.models import Model
-    from keras.layers import Input, Convolution2D, Dropout, Flatten, Dense
+    from tensorflow.python.keras.models import Model
+    from tensorflow.python.keras.layers import Input, Convolution2D, Dropout, Flatten, Dense
 
     # Use here 78 pixels height instead default 120.
     img_in = Input(shape=(78, 160, 3), name='img_in')                      # First layer, input layer, Shape comes from camera.py resolution, RGB

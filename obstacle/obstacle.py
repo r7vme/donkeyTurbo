@@ -55,7 +55,7 @@ def train(data_path):
     model.save("obstacle_model" + str(int(time.time())))
 
 def run(model_path, data_path):
-    from keras.models import load_model
+    from tensorflow.python.keras.models import load_model
     model = load_model(model_path)
 
     # Load image.

@@ -2,9 +2,10 @@
 Module contains pilot class and Keras model.
 '''
 
-import donkeycar as dk
 from collections import deque
 from donkeycar.parts.keras import KerasPilot
+from donkeycar.util import data as dkutil
+from donkeyturbo.model import dt_categorical
 
 # Main features:
 # - linear throttle computation based on angle.
@@ -24,6 +25,8 @@ class DTKerasPilot(KerasPilot):
         # TODO: do validation
         self.config = config
 
+        self.model = dt_categorical()
+
         # Initialize fixed length FIFO queue for angles historical data.
         self.angles = deque([], self.config['angle_sma_n'])
 
@@ -31,7 +34,7 @@ class DTKerasPilot(KerasPilot):
         # Do NN prediction.
         img_arr = img_arr.reshape((1,) + img_arr.shape)
         angle_binned, _ = self.model.predict(img_arr)
-        angle_unbinned = dk.utils.linear_unbin(angle_binned)
+        angle_unbinned = dkutil.linear_unbin(angle_binned[0])
 
         # Do post processing.
         angle = self.compute_angle(angle_unbinned)
