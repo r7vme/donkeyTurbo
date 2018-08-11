@@ -9,7 +9,7 @@ from PIL import Image
 from io import BytesIO
 from donkeycar.management.base import BaseCommand
 from donkeycar.parts.simulation import SteeringServer
-from donkeyturbo.keras import DTKerasPilot
+from donkeyturbo.pilot import DTKerasPilot
 
 class Sim(object):
     '''
