@@ -15,14 +15,12 @@ class Sim(object):
     '''
     Start a websocket SocketIO server to talk to a donkey simulator.
     '''
-    def run(self, args):
-        cfg = dkbase.load_config("./config.py")
-
+    def run(self, cfg, args):
         if cfg is None:
             return
 
         # NOTE(r7vme): Use hardcoded pilot.
-        kl = DTKerasPilot()
+        kl = DTKerasPilot(config=cfg.DT_PILOT_CONFIG)
 
         # Load keras model.
         kl.load(args["--model"])

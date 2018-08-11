@@ -70,7 +70,7 @@ def drive(cfg, model_path=None, use_joystick=False):
 
     # Run the pilot if the mode is not user.
     # NOTE(r7vme): Always use DTKerasPilot
-    kl = DTKerasPilot()
+    kl = DTKerasPilot(config=cfg.DT_PILOT_CONFIG)
     if model_path:
         kl.load(model_path)
 
@@ -169,11 +169,8 @@ if __name__ == '__main__':
     if args['drive']:
         drive(cfg, model_path = args['--model'], use_joystick=args['--js'])
     elif args['train']:
-        tub = args['--tub']
-        model = args['--model']
-        cache = not args['--no_cache']
-        train(cfg, tub, model)
+        train(cfg, args['--tub'], args['--model'])
     elif args['sim']:
         from donkeyturbo.simulation import Sim
         s = Sim()
-        s.run(args)
+        s.run(cfg, args)
