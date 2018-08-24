@@ -54,8 +54,9 @@ AUTO_RECORD_ON_THROTTLE = True
 
 #DONKEYTURBO
 DT_PILOT_CONFIG = {
-               'angle_sma_n': 10,
+               'acceleration_confidence': 0.5,
+               'angle_sma_n': 5,
                'throttle_max': 1.0,
-               'throttle_min': 0.5,
+               'throttle_min': 0.2,
                'obstacle_model': '',
                 }

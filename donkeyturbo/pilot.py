@@ -18,6 +18,7 @@ class DTKerasPilot(KerasPilot):
         if config is None:
             # Set default values.
             config = {
+                    'acceleration_confidence': 0.5,
                     'angle_sma_n': 3,
                     'throttle_max': 1.0,
                     'throttle_min': 0.5,
@@ -41,11 +42,13 @@ class DTKerasPilot(KerasPilot):
         # Prepare image array.
         img_arr = img_arr.reshape((1,) + img_arr.shape)
 
-        # Compute angle.
+        # NN angle prediction.
         angle_binned, _ = self.model.predict(img_arr)
         angle_unbinned = dkutil.linear_unbin(angle_binned[0])
+        # TODO: Compute average (SMA) confidence.
+        angle_confidence = max(angle_binned[0])
 
-        # If enabled, do obstacle detection.
+        # Fallback mode. If enabled, do obstacle detection.
         if self.obstacle:
             angle_obstacle = self.compute_angle_obstacle(img_arr)
             # In case we detected obstacle use fallback angle.
@@ -53,8 +56,16 @@ class DTKerasPilot(KerasPilot):
                 angle_unbinned = angle_obstacle
                 print('obstacle detected, using fallback mode.')
 
+        # Angle postprocessing.
         angle = self.compute_angle(angle_unbinned)
-        throttle = self.compute_throttle(angle)
+
+        # By default we always run at minimal speed.
+        throttle = self.config['throttle_min']
+
+        # Speed-up if NN is confident in what it saw.
+        if float(angle_confidence) > float(self.config['acceleration_confidence']):
+            print('speeding up, because NN confident on:', angle_confidence)
+            throttle = self.compute_throttle(angle)
 
         print('throttle:', throttle, 'angle:', angle)
         return angle, throttle
