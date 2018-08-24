@@ -10,7 +10,7 @@ setup(name='donkeyturbo',
       packages=['donkeyturbo'],
       zip_safe=False,
       install_requires=[
-          'donkeycar==2.5.1',
+          'donkeycar[tf]==2.5.1',
           'docopt',
           'pillow',
           'numpy',
