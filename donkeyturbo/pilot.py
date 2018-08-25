@@ -22,6 +22,9 @@ class DTKerasPilot(KerasPilot):
                     'angle_sma_n': 3,
                     'throttle_max': 1.0,
                     'throttle_min': 0.5,
+                    'throttle_failsafe': 0,
+                    'throttle_iterations_total': 20,
+                    'throttle_iterations_active': 10,
                     'obstacle_model': '',
                     }
 
@@ -37,6 +40,8 @@ class DTKerasPilot(KerasPilot):
         self.obstacle = None
         if self.config['obstacle_model']:
             self.obstacle = load_model(self.config['obstacle_model'])
+
+        self.iteration = 0
 
     def run(self, img_arr):
         # Prepare image array.
@@ -59,13 +64,16 @@ class DTKerasPilot(KerasPilot):
         # Angle postprocessing.
         angle = self.compute_angle(angle_unbinned)
 
-        # By default we always run at minimal speed.
-        throttle = self.config['throttle_min']
+        # By default we always run at failsafe speed.
+        throttle = self.config['throttle_failsafe']
 
         # Speed-up if NN is confident in what it saw.
         if float(angle_confidence) > float(self.config['acceleration_confidence']):
-            print('speeding up, because NN confident on:', angle_confidence)
             throttle = self.compute_throttle(angle)
+
+        # Workaround to make car slower.
+        if self.skip_throttle():
+            throttle = 0
 
         print('throttle:', throttle, 'angle:', angle)
         return angle, throttle
@@ -108,3 +116,11 @@ class DTKerasPilot(KerasPilot):
         binned = self.obstacle.predict(img_arr)[0].tolist()
         obstacle = binned.index(max(binned))
         return obstacle_to_angle[obstacle]
+
+    def skip_throttle(self):
+        self.iteration += 1
+        if self.iteration >= self.config['throttle_iterations_total']:
+            self.iteration = 0
+        if self.iteration >= self.config['throttle_iterations_active']:
+            return True
+        return False
